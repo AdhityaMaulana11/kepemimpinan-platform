@@ -12,7 +12,8 @@ import { useState, useEffect, useCallback } from 'react';
 
 function OfficeViewer({ url, title }: { url: string; title: string }) {
   const [loaded, setLoaded] = useState(false);
-  const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+  // Using Microsoft Office Web Viewer (much more reliable for .pptx, .xlsx, .docx than Google Docs Viewer)
+  const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
   return (
     <div className="relative w-full h-full">
       {!loaded && (
