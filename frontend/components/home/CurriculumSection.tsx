@@ -31,7 +31,7 @@ const curriculum = [
 ];
 
 const MULTIPLIER = 40; // Makes it feel infinite (120 total items)
-const extendedCurriculum = Array(MULTIPLIER).fill(curriculum).flat();
+const extendedCurriculum = Array(MULTIPLIER).fill(curriculum).flat() as typeof curriculum;
 const INITIAL_ACTIVE = Math.floor(MULTIPLIER / 2) * curriculum.length;
 
 export default function CurriculumSection() {
