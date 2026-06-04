@@ -32,28 +32,28 @@ export default function HeroSection() {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-        <div className="max-w-4xl">
+        <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
           {/* Eyebrow */}
-          <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-xs font-semibold mb-8 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-400 text-sm font-semibold mb-8 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
             Platform Kepemimpinan #1 Indonesia
           </div>
 
           {/* Headline */}
-          <h1 className={`section-title text-white mb-6 transition-all duration-700 delay-100 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <h1 className={`text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 leading-[1.15] transition-all duration-700 delay-100 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             Kepemimpinan{' '}
             <span className="gradient-text-animated">Efektif</span>
-            {' '}& Manajemen{' '}
+            <br className="hidden sm:block" /> & Manajemen{' '}
             <span className="gradient-text-animated" style={{ animationDelay: '1s' }}>Tim</span>
           </h1>
 
           {/* Subtitle */}
-          <p className={`text-lg text-slate-400 leading-relaxed max-w-2xl mb-10 transition-all duration-700 delay-200 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <p className={`text-base sm:text-lg text-slate-400 leading-relaxed max-w-2xl mb-10 transition-all duration-700 delay-200 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             Akses ratusan materi presentasi, dokumen, dan video kepemimpinan secara gratis. Tingkatkan kemampuan manajerial dan kepemimpinan Anda hari ini.
           </p>
 
           {/* CTAs */}
-          <div className={`flex flex-wrap gap-4 mb-16 transition-all duration-700 delay-300 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <div className={`flex flex-wrap justify-center gap-4 mb-16 transition-all duration-700 delay-300 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             <Link href="/materials" className="btn-primary">
               <span className="flex items-center gap-2">
                 <Play size={16} />
@@ -67,7 +67,7 @@ export default function HeroSection() {
           </div>
 
           {/* Trust badges */}
-          <div className={`flex flex-wrap gap-6 transition-all duration-700 delay-400 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <div className={`flex flex-wrap justify-center gap-6 sm:gap-10 transition-all duration-700 delay-400 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
             {badges.map(({ icon: Icon, label, color }) => (
               <div key={label} className="flex items-center gap-2">
                 <div className={`w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center ${color}`}>
