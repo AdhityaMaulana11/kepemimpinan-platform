@@ -48,16 +48,19 @@ export default function MaterialDetailPage({ params }: { params: { id: string } 
   const icon = getFileTypeIcon(file.file_type);
 
   return (
-    <div className="min-h-screen" style={{ background: '#060b18' }}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="min-h-screen bg-[#060b18] pt-32 pb-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back */}
-        <Link href="/materials" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8 text-sm">
+        <Link 
+          href="/materials" 
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-all duration-200 mb-8 text-sm border border-white/5 shadow-sm"
+        >
           <ArrowLeft size={16} /> Kembali ke Materi
         </Link>
 
         {/* Header card */}
-        <div className="glass-card rounded-2xl p-8 mb-6">
-          <div className="flex items-start gap-4 mb-6">
+        <div className="glass-card rounded-3xl p-8 sm:p-10 mb-6 shadow-2xl">
+          <div className="flex flex-col sm:flex-row items-start gap-6 mb-8">
             <span className="text-5xl">{icon}</span>
             <div className="flex-1">
               <span className={`badge ${badgeClass} mb-3`}>.{file.file_type}</span>
