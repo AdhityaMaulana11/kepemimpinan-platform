@@ -30,64 +30,70 @@ export default function MaterialsPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-20">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-white mb-2">Semua Materi</h1>
-          <p className="text-slate-400">Jelajahi dan unduh materi kepemimpinan terbaik</p>
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight">Semua <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-500">Materi</span></h1>
+          <p className="text-slate-400 text-lg">Jelajahi dan unduh materi kepemimpinan terbaik</p>
         </div>
 
         {/* Search + Sort */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 max-w-4xl mx-auto">
+          <div className="relative w-full">
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               type="text"
-              placeholder="Cari materi..."
-              className="input-field pl-10"
+              placeholder="Cari materi berdasarkan judul atau kata kunci..."
+              className="w-full bg-[#0b1224] border border-white/[0.05] rounded-2xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-lg"
             />
           </div>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="input-field w-auto min-w-[160px] cursor-pointer"
+            className="w-full sm:w-auto min-w-[200px] bg-[#0b1224] border border-white/[0.05] rounded-2xl py-3.5 px-4 text-sm text-slate-300 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-lg cursor-pointer"
           >
             {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value} style={{ background: '#111827' }}>{o.label}</option>
+              <option key={o.value} value={o.value} style={{ background: '#060b18' }}>Urutkan: {o.label}</option>
             ))}
           </select>
         </div>
 
-        {/* Type filters */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <button onClick={() => { setType(''); setPage(1); }} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${!type ? 'bg-blue-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
-            Semua Tipe
-          </button>
-          {FILE_TYPES.map((t) => (
-            <button key={t} onClick={() => { setType(t); setPage(1); }} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${type === t ? 'bg-blue-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
-              .{t}
+        {/* Unified Filters */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-14">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button onClick={() => { setType(''); setPage(1); }} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${!type ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
+              Semua Tipe
             </button>
-          ))}
-        </div>
-
-        {/* Category filters */}
-        {categories && categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-8">
-            <button onClick={() => { setCategory(''); setPage(1); }} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${!category ? 'bg-violet-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
-              Semua Kategori
-            </button>
-            {categories.map((cat) => (
-              <button key={cat.id} onClick={() => { setCategory(cat.id); setPage(1); }} className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${category === cat.id ? 'bg-violet-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
-                {cat.name}
+            {FILE_TYPES.map((t) => (
+              <button key={t} onClick={() => { setType(t); setPage(1); }} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${type === t ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
+                .{t}
               </button>
             ))}
           </div>
-        )}
+
+          {categories && categories.length > 0 && (
+            <>
+              <div className="w-px h-6 bg-slate-700 hidden lg:block mx-2" />
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-2 lg:mt-0">
+                <button onClick={() => { setCategory(''); setPage(1); }} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${!category ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/25' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
+                  Semua Kategori
+                </button>
+                {categories.map((cat) => (
+                  <button key={cat.id} onClick={() => { setCategory(cat.id); setPage(1); }} className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-300 ${category === cat.id ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/25' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}>
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Results count */}
-        <p className="text-xs text-slate-500 mb-6">{data?.total ?? 0} materi ditemukan</p>
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-sm font-medium text-slate-400">{data?.total ?? 0} <span className="text-slate-500">materi ditemukan</span></p>
+        </div>
 
         {/* Grid */}
         {isLoading ? (
