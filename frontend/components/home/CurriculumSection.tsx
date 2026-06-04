@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Target, Users, MessageSquare } from 'lucide-react';
+import { Target, Users, MessageSquare } from 'lucide-react';
 
 const curriculum = [
   {
@@ -44,9 +44,11 @@ export default function CurriculumSection() {
   // Center initial active item on mount
   useEffect(() => {
     if (scrollRef.current) {
-      const card = scrollRef.current.children[INITIAL_ACTIVE] as HTMLElement;
+      const container = scrollRef.current;
+      const card = container.children[INITIAL_ACTIVE] as HTMLElement;
       if (card) {
-        card.scrollIntoView({ block: 'nearest', inline: 'center' });
+        const centerPos = card.offsetLeft - container.clientWidth / 2 + card.clientWidth / 2;
+        container.scrollTo({ left: centerPos, behavior: 'auto' });
       }
     }
   }, []);
@@ -54,9 +56,12 @@ export default function CurriculumSection() {
   const scrollTo = (index: number, smooth = true) => {
     setActive(index);
     if (scrollRef.current) {
-      const card = scrollRef.current.children[index] as HTMLElement;
+      const container = scrollRef.current;
+      const card = container.children[index] as HTMLElement;
       if (card) {
-        card.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'nearest', inline: 'center' });
+        // Prevent window jump by using container scrollTo instead of scrollIntoView
+        const centerPos = card.offsetLeft - container.clientWidth / 2 + card.clientWidth / 2;
+        container.scrollTo({ left: centerPos, behavior: smooth ? 'smooth' : 'auto' });
       }
     }
   };
@@ -132,19 +137,9 @@ export default function CurriculumSection() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-end justify-between mb-12">
-          <div>
-            <span className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-3 block">Kurikulum</span>
-            <h2 className="section-title text-white">Apa yang Akan <span className="gradient-text">Anda Pelajari</span></h2>
-          </div>
-          <div className="hidden md:flex items-center gap-3">
-            <button onClick={() => scroll('left')} className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-blue-500/40 transition-all">
-              <ChevronLeft size={18} />
-            </button>
-            <button onClick={() => scroll('right')} className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-blue-500/40 transition-all">
-              <ChevronRight size={18} />
-            </button>
-          </div>
+        <div className="text-center mb-12 max-w-2xl mx-auto">
+          <span className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-3 block">Kurikulum</span>
+          <h2 className="section-title text-white">Apa yang Akan <span className="gradient-text">Anda Pelajari</span></h2>
         </div>
 
         {/* Cards scroll */}
