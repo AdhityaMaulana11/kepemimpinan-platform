@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Users, Tag, Shield, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Tag, Shield, LogOut, Home } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
@@ -54,12 +54,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="p-4 border-t border-white/5">
-          <Link href="/" className="flex items-center gap-3 px-3 py-2.5 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-1">
-            ← Ke Beranda
+        <div className="p-4 border-t border-white/5 flex flex-col gap-3">
+          <Link href="/" className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium text-slate-300 bg-white/[0.03] hover:bg-white/[0.08] hover:text-white rounded-xl border border-white/[0.05] transition-all duration-300 shadow-sm">
+            <Home size={16} className="opacity-70" /> Kembali ke Beranda
           </Link>
-          <button onClick={logout} className="flex items-center gap-3 px-3 py-2.5 w-full text-sm text-red-500 hover:text-red-400 hover:bg-red-500/5 rounded-xl transition-all">
-            <LogOut size={16} /> Keluar
+          <button onClick={logout} className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 transition-all duration-300 shadow-sm">
+            <LogOut size={16} className="opacity-70" /> Keluar
           </button>
         </div>
       </aside>
