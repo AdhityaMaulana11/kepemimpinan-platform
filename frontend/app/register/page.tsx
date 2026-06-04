@@ -1,0 +1,111 @@
+'use client';
+
+import Link from 'next/link';
+import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { UserPlus, Eye, EyeOff, Zap, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+const schema = z.object({
+  full_name: z.string().min(3, 'Nama minimal 3 karakter'),
+  email: z.string().email('Email tidak valid'),
+  password: z.string().min(6, 'Password minimal 6 karakter'),
+  confirm_password: z.string(),
+}).refine((d) => d.password === d.confirm_password, {
+  message: 'Password tidak cocok',
+  path: ['confirm_password'],
+});
+type FormData = z.infer<typeof schema>;
+
+export default function RegisterPage() {
+  const { register: registerUser } = useAuth();
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) });
+
+  const onSubmit = async (data: FormData) => {
+    setLoading(true);
+    try {
+      await registerUser(data.full_name, data.email, data.password);
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Gagal membuat akun';
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 py-16" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(139,92,246,0.1) 0%, transparent 60%), #060b18' }}>
+      <div className="absolute w-96 h-96 bg-violet-600/10 rounded-full filter blur-3xl top-20 left-20 pointer-events-none animate-float" />
+      <div className="absolute w-72 h-72 bg-blue-600/8 rounded-full filter blur-3xl bottom-20 right-20 pointer-events-none animate-float" style={{ animationDelay: '2s' }} />
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center gap-2.5 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <Zap size={20} className="text-white" />
+            </div>
+            <div className="flex flex-col leading-none text-left">
+              <span className="text-base font-bold text-white">Kepemimpinan</span>
+              <span className="text-xs text-blue-400">Platform</span>
+            </div>
+          </Link>
+          <h1 className="text-2xl font-bold text-white mb-2">Buat Akun Gratis</h1>
+          <p className="text-slate-400 text-sm">Mulai perjalanan kepemimpinan Anda hari ini</p>
+        </div>
+
+        <div className="glass-card rounded-2xl p-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Nama Lengkap</label>
+              <input {...register('full_name')} type="text" placeholder="Budi Santoso" className="input-field" />
+              {errors.full_name && <p className="text-xs text-red-400 mt-1.5">{errors.full_name.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+              <input {...register('email')} type="email" placeholder="nama@email.com" className="input-field" />
+              {errors.email && <p className="text-xs text-red-400 mt-1.5">{errors.email.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+              <div className="relative">
+                <input {...register('password')} type={showPass ? 'text' : 'password'} placeholder="Min. 6 karakter" className="input-field pr-10" />
+                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300">
+                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              {errors.password && <p className="text-xs text-red-400 mt-1.5">{errors.password.message}</p>}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Konfirmasi Password</label>
+              <input {...register('confirm_password')} type="password" placeholder="Ulangi password" className="input-field" />
+              {errors.confirm_password && <p className="text-xs text-red-400 mt-1.5">{errors.confirm_password.message}</p>}
+            </div>
+
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center py-3 mt-2">
+              <span className="flex items-center gap-2">
+                {loading ? <Loader2 size={16} className="animate-spin" /> : <UserPlus size={16} />}
+                {loading ? 'Memproses...' : 'Daftar Sekarang'}
+              </span>
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-slate-500">
+              Sudah punya akun?{' '}
+              <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">Masuk</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
