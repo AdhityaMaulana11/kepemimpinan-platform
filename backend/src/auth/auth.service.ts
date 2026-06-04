@@ -76,11 +76,13 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const supabase = this.supabaseService.getClient();
+    // Use a fresh anon client ONLY for password verification
+    // so that signInWithPassword does NOT pollute the service-role singleton session
+    const anonClient = this.supabaseService.createAnonClient();
+    const supabase = this.supabaseService.getClient(); // service-role for DB queries
 
-    // Verify credentials via Supabase Auth
     const { data: authData, error: authError } =
-      await supabase.auth.signInWithPassword({
+      await anonClient.auth.signInWithPassword({
         email: dto.email,
         password: dto.password,
       });
@@ -91,15 +93,32 @@ export class AuthService {
 
     const userId = authData.user.id;
 
-    // Get profile with role
-    const { data: profile, error: profileError } = await supabase
+    // Fetch profile using service-role client (bypasses RLS)
+    let { data: profile } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
-    if (profileError || !profile) {
-      throw new UnauthorizedException('Profil pengguna tidak ditemukan');
+    // Safety net: if profile somehow missing, create it now
+    if (!profile) {
+      const { data: authUser } = await supabase.auth.admin.getUserById(userId);
+      const fallbackName =
+        (authUser?.user?.user_metadata?.full_name as string | undefined) ??
+        dto.email.split('@')[0];
+
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .insert({ id: userId, full_name: fallbackName, role: 'user' })
+        .select()
+        .single();
+
+      if (insertError || !newProfile) {
+        throw new UnauthorizedException(
+          'Profil pengguna tidak ditemukan dan gagal dibuat',
+        );
+      }
+      profile = newProfile;
     }
 
     const token = this.jwtService.sign({
