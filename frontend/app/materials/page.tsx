@@ -91,9 +91,9 @@ export default function MaterialsPage() {
         </div>
 
         {/* Results count */}
-        <div className="flex items-center justify-between mb-6">
+        {/* <div className="flex items-center justify-between mb-6">
           <p className="text-sm font-medium text-slate-400">{data?.total ?? 0} <span className="text-slate-500">materi ditemukan</span></p>
-        </div>
+        </div> */}
 
         {/* Grid */}
         {isLoading ? (
