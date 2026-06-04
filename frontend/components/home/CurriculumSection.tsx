@@ -32,15 +32,50 @@ const curriculum = [
 
 export default function CurriculumSection() {
   const [active, setActive] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftPos, setScrollLeftPos] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: 'left' | 'right') => {
-    const next = dir === 'right' ? Math.min(active + 1, curriculum.length - 1) : Math.max(active - 1, 0);
+    const next = dir === 'right' 
+      ? (active + 1) % curriculum.length 
+      : (active - 1 + curriculum.length) % curriculum.length;
     setActive(next);
     if (scrollRef.current) {
       const card = scrollRef.current.children[next] as HTMLElement;
-      card?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
     }
+  };
+
+  // Auto-play when idle
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isDragging) scroll('right');
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [active, isDragging]);
+
+  // Drag to scroll logic
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    if (scrollRef.current) {
+      setStartX(e.pageX - scrollRef.current.offsetLeft);
+      setScrollLeftPos(scrollRef.current.scrollLeft);
+    }
+  };
+
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeftPos - walk;
   };
 
   return (
@@ -56,24 +91,32 @@ export default function CurriculumSection() {
             <h2 className="section-title text-white">Apa yang Akan <span className="gradient-text">Anda Pelajari</span></h2>
           </div>
           <div className="hidden md:flex items-center gap-3">
-            <button onClick={() => scroll('left')} disabled={active === 0} className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-blue-500/40 disabled:opacity-30 transition-all">
+            <button onClick={() => scroll('left')} className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-blue-500/40 transition-all">
               <ChevronLeft size={18} />
             </button>
-            <button onClick={() => scroll('right')} disabled={active === curriculum.length - 1} className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-blue-500/40 disabled:opacity-30 transition-all">
+            <button onClick={() => scroll('right')} className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-blue-500/40 transition-all">
               <ChevronRight size={18} />
             </button>
           </div>
         </div>
 
         {/* Cards scroll */}
-        <div ref={scrollRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div 
+          ref={scrollRef}
+          onMouseDown={handleMouseDown}
+          onMouseLeave={handleMouseLeave}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          className={`flex gap-6 overflow-x-auto pb-8 pt-4 select-none ${isDragging ? 'cursor-grabbing snap-none' : 'cursor-grab snap-x snap-mandatory'} transition-all`}
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {curriculum.map((item, i) => {
             const Icon = item.icon;
             return (
               <div
                 key={i}
-                onClick={() => setActive(i)}
-                className={`glass-card rounded-2xl p-6 cursor-pointer transition-all duration-300 ${active === i ? 'border-blue-500/30 shadow-lg shadow-blue-500/10' : ''}`}
+                onClick={() => !isDragging && setActive(i)}
+                className={`flex-none w-[85vw] sm:w-[400px] lg:w-[380px] snap-center glass-card rounded-2xl p-6 transition-all duration-300 ${active === i ? 'border-blue-500/30 shadow-lg shadow-blue-500/10 scale-100 opacity-100' : 'scale-[0.98] opacity-60 hover:opacity-100'}`}
               >
                 <div className="flex items-start justify-between mb-6">
                   <span className="text-4xl font-black text-white/5">{item.number}</span>
@@ -81,9 +124,9 @@ export default function CurriculumSection() {
                     <Icon size={22} className="text-white" />
                   </div>
                 </div>
-                <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed mb-5">{item.description}</p>
-                <div className="flex flex-wrap gap-2">
+                <h3 className="text-lg font-bold text-white mb-3 pointer-events-none">{item.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed mb-5 pointer-events-none">{item.description}</p>
+                <div className="flex flex-wrap gap-2 pointer-events-none">
                   {item.topics.map((t) => (
                     <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-white/5 text-slate-400 border border-white/5">{t}</span>
                   ))}
@@ -94,9 +137,9 @@ export default function CurriculumSection() {
         </div>
 
         {/* Dots */}
-        <div className="flex justify-center gap-2 mt-8">
+        <div className="flex justify-center gap-2 mt-2">
           {curriculum.map((_, i) => (
-            <button key={i} onClick={() => setActive(i)} className={`transition-all duration-300 rounded-full ${i === active ? 'w-6 h-2 bg-blue-500' : 'w-2 h-2 bg-slate-600 hover:bg-slate-400'}`} />
+            <button key={i} onClick={() => { setActive(i); scrollRef.current?.children[i]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }} className={`transition-all duration-300 rounded-full ${i === active ? 'w-8 h-2 bg-blue-500' : 'w-2 h-2 bg-slate-600 hover:bg-slate-400'}`} />
           ))}
         </div>
       </div>
