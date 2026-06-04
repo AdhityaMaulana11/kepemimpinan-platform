@@ -30,24 +30,40 @@ const curriculum = [
   },
 ];
 
+const MULTIPLIER = 40; // Makes it feel infinite (120 total items)
+const extendedCurriculum = Array(MULTIPLIER).fill(curriculum).flat();
+const INITIAL_ACTIVE = Math.floor(MULTIPLIER / 2) * curriculum.length;
+
 export default function CurriculumSection() {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(INITIAL_ACTIVE);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeftPos, setScrollLeftPos] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (dir: 'left' | 'right') => {
-    const next = dir === 'right' 
-      ? (active + 1) % curriculum.length 
-      : (active - 1 + curriculum.length) % curriculum.length;
-    setActive(next);
+  
+  // Center initial active item on mount
+  useEffect(() => {
     if (scrollRef.current) {
-      const card = scrollRef.current.children[next] as HTMLElement;
+      const card = scrollRef.current.children[INITIAL_ACTIVE] as HTMLElement;
       if (card) {
-        card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        card.scrollIntoView({ block: 'nearest', inline: 'center' });
       }
     }
+  }, []);
+
+  const scrollTo = (index: number, smooth = true) => {
+    setActive(index);
+    if (scrollRef.current) {
+      const card = scrollRef.current.children[index] as HTMLElement;
+      if (card) {
+        card.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'nearest', inline: 'center' });
+      }
+    }
+  };
+
+  const scroll = (dir: 'left' | 'right') => {
+    const next = dir === 'right' ? active + 1 : active - 1;
+    scrollTo(next);
   };
 
   // Auto-play when idle
@@ -76,6 +92,37 @@ export default function CurriculumSection() {
     const x = e.pageX - scrollRef.current.offsetLeft;
     const walk = (x - startX) * 2;
     scrollRef.current.scrollLeft = scrollLeftPos - walk;
+  };
+
+  // Track active item when scrolling manually
+  const handleScroll = () => {
+    if (!scrollRef.current || isDragging) return;
+    const container = scrollRef.current;
+    const scrollCenter = container.scrollLeft + container.clientWidth / 2;
+    
+    let closestIndex = active;
+    let minDiff = Infinity;
+    
+    Array.from(container.children).forEach((child, index) => {
+      const childEle = child as HTMLElement;
+      const childCenter = childEle.offsetLeft + childEle.clientWidth / 2;
+      const diff = Math.abs(childCenter - scrollCenter);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = index;
+      }
+    });
+    
+    if (closestIndex !== active) {
+      setActive(closestIndex);
+    }
+  };
+
+  // Dots logic (find closest index corresponding to the chosen dot)
+  const handleDotClick = (dotIndex: number) => {
+    const currentReal = active % curriculum.length;
+    const offset = dotIndex - currentReal;
+    scrollTo(active + offset);
   };
 
   return (
@@ -107,16 +154,17 @@ export default function CurriculumSection() {
           onMouseLeave={handleMouseLeave}
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
+          onScroll={handleScroll}
           className={`flex gap-6 overflow-x-auto pb-8 pt-4 select-none ${isDragging ? 'cursor-grabbing snap-none' : 'cursor-grab snap-x snap-mandatory'} transition-all`}
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {curriculum.map((item, i) => {
+          {extendedCurriculum.map((item, i) => {
             const Icon = item.icon;
             return (
               <div
                 key={i}
-                onClick={() => !isDragging && setActive(i)}
-                className={`flex-none w-[85vw] sm:w-[400px] lg:w-[380px] snap-center glass-card rounded-2xl p-6 transition-all duration-300 ${active === i ? 'border-blue-500/30 shadow-lg shadow-blue-500/10 scale-100 opacity-100' : 'scale-[0.98] opacity-60 hover:opacity-100'}`}
+                onClick={() => !isDragging && scrollTo(i)}
+                className={`flex-none w-[85vw] sm:w-[400px] lg:w-[380px] snap-center glass-card rounded-2xl p-6 transition-all duration-300 ${active === i ? 'border-blue-500/30 shadow-lg shadow-blue-500/10 scale-100 opacity-100' : 'scale-[0.98] opacity-50 hover:opacity-100'}`}
               >
                 <div className="flex items-start justify-between mb-6">
                   <span className="text-4xl font-black text-white/5">{item.number}</span>
@@ -139,7 +187,11 @@ export default function CurriculumSection() {
         {/* Dots */}
         <div className="flex justify-center gap-2 mt-2">
           {curriculum.map((_, i) => (
-            <button key={i} onClick={() => { setActive(i); scrollRef.current?.children[i]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }} className={`transition-all duration-300 rounded-full ${i === active ? 'w-8 h-2 bg-blue-500' : 'w-2 h-2 bg-slate-600 hover:bg-slate-400'}`} />
+            <button 
+              key={i} 
+              onClick={() => handleDotClick(i)} 
+              className={`transition-all duration-300 rounded-full ${(active % curriculum.length) === i ? 'w-8 h-2 bg-blue-500' : 'w-2 h-2 bg-slate-600 hover:bg-slate-400'}`} 
+            />
           ))}
         </div>
       </div>
