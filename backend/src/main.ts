@@ -14,9 +14,15 @@ async function bootstrap() {
   // Security
   app.use(helmet());
 
+  // Clean up FRONTEND_URL to ensure no trailing slash causes CORS mismatch
+  let frontendUrl = configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+  if (frontendUrl.endsWith('/')) {
+    frontendUrl = frontendUrl.slice(0, -1);
+  }
+
   // CORS
   app.enableCors({
-    origin: configService.get<string>('FRONTEND_URL', 'http://localhost:3000'),
+    origin: frontendUrl,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
