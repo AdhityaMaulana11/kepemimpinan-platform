@@ -5,9 +5,9 @@
 
 -- Seed categories
 INSERT INTO public.categories (id, name, slug, description) VALUES
-  (gen_random_uuid(), 'Kepemimpinan Dasar', 'kepemimpinan-dasar', 'Konsep dan fondasi dasar kepemimpinan yang efektif'),
-  (gen_random_uuid(), 'Gaya Kepemimpinan', 'gaya-kepemimpinan', 'Berbagai gaya dan pendekatan dalam memimpin tim'),
-  (gen_random_uuid(), 'Komunikasi Tim', 'komunikasi-tim', 'Strategi komunikasi yang efektif dalam lingkungan kerja')
+  (gen_random_uuid(), 'Artikel', 'artikel', 'Artikel dan tulisan seputar kepemimpinan'),
+  (gen_random_uuid(), 'Slide', 'slide', 'Materi presentasi dan slide kepemimpinan'),
+  (gen_random_uuid(), 'Kasus Studi', 'kasus-studi', 'Studi kasus nyata dari praktik kepemimpinan')
 ON CONFLICT (slug) DO NOTHING;
 
 -- ============================================================
