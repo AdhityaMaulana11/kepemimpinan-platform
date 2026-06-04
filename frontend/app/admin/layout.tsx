@@ -55,8 +55,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         <div className="p-4 border-t border-white/5 flex flex-col gap-3">
-          <Link href="/" className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium text-slate-300 bg-white/[0.03] hover:bg-white/[0.08] hover:text-white rounded-xl border border-white/[0.05] transition-all duration-300 shadow-sm">
-            <Home size={16} className="opacity-70" /> Kembali ke Beranda
+          <Link href="/" className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium text-blue-400 bg-blue-500/10 hover:bg-blue-500/20 hover:text-blue-300 rounded-xl border border-blue-500/20 transition-all duration-300 shadow-sm">
+            <Home size={16} className="opacity-80" /> Kembali ke Beranda
           </Link>
           <button onClick={logout} className="flex items-center gap-3 px-4 py-2.5 w-full text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-xl border border-red-500/20 transition-all duration-300 shadow-sm">
             <LogOut size={16} className="opacity-70" /> Keluar
