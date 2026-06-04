@@ -20,8 +20,12 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className={cn('fixed top-0 left-0 right-0 z-50 transition-all duration-500', scrolled ? 'glass border-b border-blue-500/10 py-3' : 'bg-transparent py-5')}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-6 pt-6 pb-4 pointer-events-none">
+      <nav className={cn(
+        'pointer-events-auto w-full max-w-6xl border border-white/10 shadow-2xl transition-all duration-500',
+        mobileOpen ? 'rounded-3xl' : 'rounded-full',
+        scrolled ? 'glass bg-[#060b18]/90 backdrop-blur-xl py-3 px-6 sm:px-8' : 'glass bg-[#060b18]/40 backdrop-blur-md py-4 px-6 sm:px-8'
+      )}>
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-lg group-hover:shadow-blue-500/40 transition-shadow duration-300">
@@ -87,7 +91,7 @@ export default function Navbar() {
             )}
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
