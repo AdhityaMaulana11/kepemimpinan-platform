@@ -40,10 +40,16 @@ export default function AdminFilesPage() {
 
       <div className="glass-card rounded-2xl overflow-hidden">
         {/* Search */}
-        <div className="px-6 py-4 border-b border-white/5">
-          <div className="relative max-w-xs">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} type="text" placeholder="Cari file..." className="input-field pl-8 py-2 text-sm" />
+        <div className="px-6 py-5 border-b border-white/5 bg-white/[0.01]">
+          <div className="relative max-w-md w-full">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input 
+              value={search} 
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }} 
+              type="text" 
+              placeholder="Cari berdasarkan judul file..." 
+              className="w-full bg-[#0b1224] border border-white/[0.05] rounded-xl py-2.5 pl-11 pr-4 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm" 
+            />
           </div>
         </div>
 
