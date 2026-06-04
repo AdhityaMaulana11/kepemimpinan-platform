@@ -6,10 +6,9 @@ import { filesApi } from '@/lib/api';
 import Link from 'next/link';
 import { ArrowLeft, Download, Presentation, Calendar, HardDrive, Eye, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { use } from 'react';
 
-export default function MaterialDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function MaterialDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { data: file, isLoading } = useFile(id);
 
   const handleDownload = async () => {

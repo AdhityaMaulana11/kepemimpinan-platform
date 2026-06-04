@@ -6,7 +6,7 @@ import { isImageFile, isVideoFile, isPdfFile, isOfficeFile } from '@/lib/utils';
 import Link from 'next/link';
 import { ArrowLeft, Download, Share2, Loader2, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
-import { use, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 function OfficeViewer({ url, title }: { url: string; title: string }) {
   const [loaded, setLoaded] = useState(false);
@@ -84,8 +84,8 @@ function PdfViewer({ url, title }: { url: string; title: string }) {
   );
 }
 
-export default function PresentPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function PresentPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { data: file, isLoading } = useFile(id);
 
   useEffect(() => {
