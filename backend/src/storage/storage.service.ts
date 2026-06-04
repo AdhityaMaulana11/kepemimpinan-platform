@@ -59,19 +59,22 @@ export class StorageService {
     }
   }
 
-  async getSignedUrl(storagePath: string, expiresIn = 3600): Promise<string> {
+  async getSignedUrl(storagePath: string): Promise<string> {
     const supabase = this.supabaseService.getClient();
 
-    const { data, error } = await supabase.storage
+    // Karena bucket 'kepemimpinan-files' adalah public bucket, 
+    // kita tidak butuh createSignedUrl (terkadang diblokir/error untuk public bucket).
+    // Cukup gunakan getPublicUrl dan tambahkan query parameter download=
+    const { data } = supabase.storage
       .from(BUCKET)
-      .createSignedUrl(storagePath, expiresIn);
+      .getPublicUrl(storagePath, {
+        download: true,
+      });
 
-    if (error || !data) {
-      throw new InternalServerErrorException(
-        'Gagal membuat signed URL: ' + (error?.message ?? ''),
-      );
+    if (!data || !data.publicUrl) {
+      throw new InternalServerErrorException('Gagal mendapatkan URL download');
     }
 
-    return data.signedUrl;
+    return data.publicUrl;
   }
 }
