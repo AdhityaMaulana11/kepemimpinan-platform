@@ -1,8 +1,14 @@
 import axios from 'axios';
 import { auth } from './auth';
 
+// Ensure baseURL always ends with /api even if user forgets it in Vercel ENV
+let baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
+if (!baseUrl.endsWith('/api')) {
+  baseUrl = baseUrl.endsWith('/') ? `${baseUrl}api` : `${baseUrl}/api`;
+}
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api',
+  baseURL: baseUrl,
   timeout: 30000,
 });
 
