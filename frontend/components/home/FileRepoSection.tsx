@@ -4,15 +4,21 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useFiles, useCategories } from '@/hooks/useFiles';
 import FileCard from '@/components/files/FileCard';
-import { Upload, ChevronRight, Loader2 } from 'lucide-react';
+import { Upload, ChevronRight, Loader2, Search } from 'lucide-react';
 
 const FILE_TYPES = ['Semua', 'pdf', 'pptx', 'docx', 'xlsx'];
 
 export default function FileRepoSection() {
   const [selectedType, setSelectedType] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: filesData, isLoading } = useFiles({ type: selectedType || undefined, category: selectedCategory || undefined, limit: 6 });
+  const { data: filesData, isLoading } = useFiles({ 
+    type: selectedType || undefined, 
+    category: selectedCategory || undefined, 
+    search: searchQuery || undefined,
+    limit: 6 
+  });
   const { data: categories } = useCategories();
 
   const files = filesData?.files ?? [];
@@ -21,12 +27,10 @@ export default function FileRepoSection() {
     <section className="py-24 bg-[#060b18]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
-          <div>
-            <span className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-3 block">Repositori File</span>
-            <h2 className="section-title text-white">Materi <span className="gradient-text">Terbaru</span></h2>
-          </div>
-          <div className="flex items-center gap-3">
+        <div className="text-center mb-12 max-w-2xl mx-auto">
+          <span className="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-3 block">Repositori File</span>
+          <h2 className="section-title text-white mb-6">Materi <span className="gradient-text">Terbaru</span></h2>
+          <div className="flex items-center justify-center gap-3">
             <Link href="/upload" className="btn-outline text-sm py-2 px-4">
               <Upload size={14} />
               Unggah
@@ -37,43 +41,58 @@ export default function FileRepoSection() {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          <div className="flex items-center gap-2 flex-wrap">
-            {FILE_TYPES.map((t) => (
-              <button
-                key={t}
-                onClick={() => setSelectedType(t === 'Semua' ? '' : t)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                  (t === 'Semua' && !selectedType) || selectedType === t
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {t === 'Semua' ? 'Semua Tipe' : `.${t}`}
-              </button>
-            ))}
-          </div>
-          {categories && categories.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap ml-2">
-              <div className="w-px h-5 bg-slate-700" />
-              <button
-                onClick={() => setSelectedCategory('')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${!selectedCategory ? 'bg-violet-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
-              >
-                Semua Kategori
-              </button>
-              {categories.map((cat) => (
+        {/* Filters and Search Bar */}
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
+          {/* Filters (Left) */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {FILE_TYPES.map((t) => (
                 <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${selectedCategory === cat.id ? 'bg-violet-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                  key={t}
+                  onClick={() => setSelectedType(t === 'Semua' ? '' : t)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                    (t === 'Semua' && !selectedType) || selectedType === t
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
+                  }`}
                 >
-                  {cat.name}
+                  {t === 'Semua' ? 'Semua Tipe' : `.${t}`}
                 </button>
               ))}
             </div>
-          )}
+            {categories && categories.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap ml-2">
+                <div className="w-px h-5 bg-slate-700 hidden sm:block" />
+                <button
+                  onClick={() => setSelectedCategory('')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${!selectedCategory ? 'bg-violet-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                >
+                  Semua Kategori
+                </button>
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${selectedCategory === cat.id ? 'bg-violet-500 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Search Bar (Right) */}
+          <div className="relative w-full lg:w-64 xl:w-72">
+            <input
+              type="text"
+              placeholder="Cari materi..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#0b1224] border border-slate-700/50 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+            />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+          </div>
         </div>
 
         {/* Grid */}
