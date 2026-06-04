@@ -158,10 +158,7 @@ export class FilesService {
       .update({ download_count: (file.download_count ?? 0) + 1 })
       .eq('id', id);
 
-    const signedUrl = await this.storageService.getSignedUrl(
-      file.storage_path,
-      3600,
-    );
+    const signedUrl = await this.storageService.getSignedUrl(file.storage_path);
 
     return { download_url: signedUrl, file_name: file.title };
   }
