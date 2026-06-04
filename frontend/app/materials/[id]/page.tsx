@@ -14,7 +14,14 @@ export default function MaterialDetailPage({ params }: { params: { id: string } 
   const handleDownload = async () => {
     try {
       const res = await filesApi.getDownloadUrl(id);
-      window.open(res.data.data.download_url, '_blank');
+      const { download_url } = res.data.data;
+      
+      const link = document.createElement('a');
+      link.href = download_url;
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch {
       toast.error('Gagal mengunduh file');
     }

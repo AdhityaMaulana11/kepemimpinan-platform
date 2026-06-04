@@ -20,7 +20,13 @@ export default function FileCard({ file, showActions = true }: FileCardProps) {
     try {
       const res = await filesApi.getDownloadUrl(file.id);
       const { download_url } = res.data.data;
-      window.open(download_url, '_blank');
+      
+      const link = document.createElement('a');
+      link.href = download_url;
+      link.setAttribute('target', '_blank');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch {
       toast.error('Gagal mengunduh file');
     }
