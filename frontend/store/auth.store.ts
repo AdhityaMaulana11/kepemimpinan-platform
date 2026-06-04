@@ -3,6 +3,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User, AuthState } from '@/types';
+import { auth } from '@/lib/auth';
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -17,9 +18,7 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         set({ user: null, token: null, isLoggedIn: false });
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('kp_access_token');
-        }
+        auth.removeToken(); // clears both localStorage AND the cookie
       },
 
       setUser: (user: User) => {
@@ -29,9 +28,10 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'kp-auth-store',
       onRehydrateStorage: () => (state) => {
-        // Sync token to localStorage for Axios interceptor
+        // On page reload, restore token to both localStorage and cookie
+        // so Axios interceptor and Next.js middleware can both read it
         if (state?.token && typeof window !== 'undefined') {
-          localStorage.setItem('kp_access_token', state.token);
+          auth.setToken(state.token);
         }
       },
     },
